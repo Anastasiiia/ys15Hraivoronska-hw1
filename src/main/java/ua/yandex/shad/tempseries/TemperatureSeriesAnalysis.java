@@ -1,4 +1,5 @@
 package ua.yandex.shad.tempseries;
+
 import java.util.Arrays;
 
 public class TemperatureSeriesAnalysis {
@@ -43,9 +44,9 @@ public class TemperatureSeriesAnalysis {
         this.throwExceptionIfSeriesIsEmpty();
         double sumSqueredDeviations = 0;
         double average = this.average();
-		double deviation = 0;
+        double deviation = 0;
         for (int i = 0; i < filledSize; i++) {
-			deviation = temperatureSeries[i] - average;
+            deviation = temperatureSeries[i] - average;
             sumSqueredDeviations += deviation * deviation;
         }
         return sumSqueredDeviations / filledSize;
@@ -80,15 +81,15 @@ public class TemperatureSeriesAnalysis {
     public double findTempClosestToValue(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
         double closestToValue = temperatureSeries[0];
-        double minDeviationFromValue = Math.abs(closestToValue - tempValue);
-		double deviationFromValue = minDeviationFromValue;
+        double minDeviation = Math.abs(closestToValue - tempValue);
+        double deviation = 0;
         for (int i = 0; i < filledSize; i++) {
-			deviationFromValue = Math.abs(temperatureSeries[i] - tempValue);
-            if (deviationFromValue < minDeviationFromValue
-                    || (Math.abs(deviationFromValue - minDeviationFromValue) < 0.00001
+            deviation = Math.abs(temperatureSeries[i] - tempValue);
+            if (deviation < minDeviation
+                    || (Math.abs(deviation - minDeviation) < 0.00001
                     && closestToValue - tempValue < 0)) {
                 closestToValue = temperatureSeries[i];
-				minDeviationFromValue = deviationFromValue;
+                minDeviation = deviation;
             }
         }
         return closestToValue;
@@ -116,7 +117,7 @@ public class TemperatureSeriesAnalysis {
 
     public double[] findTempsLessThen(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
-		int number = this.countTempsLessThen(tempValue);
+        int number = this.countTempsLessThen(tempValue);
         double[] tempsLessThenValue = new double[number];
         int index = 0;
         for (int i = 0; i < filledSize; i++) {
@@ -130,7 +131,7 @@ public class TemperatureSeriesAnalysis {
 
     public double[] findTempsGreaterThen(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
-		int number = this.countTempsGreaterThen(tempValue);
+        int number = this.countTempsGreaterThen(tempValue);
         double[] tempsGreaterThenValue = new double[number];
         int index = 0;
         for (int i = 0; i < filledSize; i++) {
@@ -145,8 +146,8 @@ public class TemperatureSeriesAnalysis {
     public TempSummaryStatistics summaryStatistics() {
         this.throwExceptionIfSeriesIsEmpty();
         TempSummaryStatistics summaryStatistics =
-                new TempSummaryStatistics(this.average(), this.deviation(), 
-				this.min(), this.max());
+                new TempSummaryStatistics(this.average(), this.deviation(),
+                this.min(), this.max());
         return summaryStatistics;
     }
 
@@ -180,4 +181,3 @@ public class TemperatureSeriesAnalysis {
         return filledSize;
     }
 }
-

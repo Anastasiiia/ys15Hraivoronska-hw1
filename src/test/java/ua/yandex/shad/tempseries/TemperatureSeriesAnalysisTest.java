@@ -283,12 +283,23 @@ public class TemperatureSeriesAnalysisTest {
     }
 
     @Test
-    public void testFindTempClosestToZero_AmongNumbersWithSameDistanceToValueReturnBigger() {
+    public void testFindTempClosestToValue_AmongNumbersWithSameDistanceToValueReturnBigger() {
         double[] temperatureSeries = {-3.5, -2.5, 3, -3.5, 3.5};
         double value = -3;
         TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
         double expResult = -2.5;
-        double actualResult = seriesAnalysis.findTempClosestToZero();
+        double actualResult = seriesAnalysis.findTempClosestToValue(value);
+
+        assertEquals(expResult, actualResult, 0.00001);
+    }
+
+    @Test
+    public void testFindTempClosestToValue_ResultValueOnFirstPlace() {
+        double[] temperatureSeries = {9.8, 10.25, -10, 0};
+        double value = 10;
+        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
+        double expResult = 9.8;
+        double actualResult = seriesAnalysis.findTempClosestToValue(value);
 
         assertEquals(expResult, actualResult, 0.00001);
     }
@@ -382,20 +393,19 @@ public class TemperatureSeriesAnalysisTest {
         TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
         seriesAnalysis.summaryStatistics();
     }
-    
+
     @Test
-        public void testSummaryStatistics(){
-		double[] temperatureSeries = {1.0, 0.0, -1.0, 0.0};
-		TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);     
+    public void testSummaryStatistics() {
+        double[] temperatureSeries = {1.0, 0.0, -1.0, 0.0};
+        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
         TempSummaryStatistics sumStatistics = seriesAnalysis.summaryStatistics();
-		
-		assertEquals(0, sumStatistics.getAvgTemp(), 0.00001);
-		assertEquals(0.5, sumStatistics.getDevTemp(), 0.00001);
-		assertEquals(-1, sumStatistics.getMinTemp(), 0.00001);
-		assertEquals(1, sumStatistics.getMaxTemp(), 0.00001);
+
+        assertEquals(0, sumStatistics.getAvgTemp(), 0.00001);
+        assertEquals(0.5, sumStatistics.getDevTemp(), 0.00001);
+        assertEquals(-1, sumStatistics.getMinTemp(), 0.00001);
+        assertEquals(1, sumStatistics.getMaxTemp(), 0.00001);
     }
-	
-	
+
     @Test(expected = IllegalArgumentException.class)
     public void testAddTemps_ThrowExceptionOnTempLessThenMinTemp() {
         double[] temperatureSeries = {24, -8.7};
