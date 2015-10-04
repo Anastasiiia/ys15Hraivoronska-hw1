@@ -3,19 +3,19 @@ import java.util.Arrays;
 
 public class TemperatureSeriesAnalysis {
 
-    private final static int initialSize = 10;
-    private final static int minTemperature = -273;
+    private static final int INITIAL_SIZE = 10;
+    private static final int MIN_TEMPERATURE = -273;
     private int filledSize;
     private double[] temperatureSeries;
 
     public TemperatureSeriesAnalysis() {
-        temperatureSeries = new double[initialSize];
+        temperatureSeries = new double[INITIAL_SIZE];
         filledSize = 0;
     }
 
     public TemperatureSeriesAnalysis(double[] temperatureSeries) {
         this.checkBoundsForTemps(temperatureSeries);
-        int size = Math.max(initialSize, temperatureSeries.length);
+        int size = Math.max(INITIAL_SIZE, temperatureSeries.length);
         this.temperatureSeries = Arrays.copyOf(temperatureSeries, size);
         filledSize = temperatureSeries.length;
     }
@@ -43,8 +43,10 @@ public class TemperatureSeriesAnalysis {
         this.throwExceptionIfSeriesIsEmpty();
         double sumSqueredDeviations = 0;
         double average = this.average();
+		double deviation = 0;
         for (int i = 0; i < filledSize; i++) {
-            sumSqueredDeviations += (temperatureSeries[i] - average) * (temperatureSeries[i] - average);
+			deviation = temperatureSeries[i] - average;
+            sumSqueredDeviations += deviation * deviation;
         }
         return sumSqueredDeviations / filledSize;
     }
@@ -78,12 +80,15 @@ public class TemperatureSeriesAnalysis {
     public double findTempClosestToValue(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
         double closestToValue = temperatureSeries[0];
-        double delta = 0.00001;
+        double minDeviationFromValue = Math.abs(closestToValue - tempValue);
+		double deviationFromValue = minDeviationFromValue;
         for (int i = 0; i < filledSize; i++) {
-            if ((Math.abs(temperatureSeries[i] - tempValue) < Math.abs(closestToValue - tempValue))
-                    || (Math.abs(temperatureSeries[i] - tempValue - Math.abs(closestToValue - tempValue)) < delta
+			deviationFromValue = Math.abs(temperatureSeries[i] - tempValue);
+            if (deviationFromValue < minDeviationFromValue
+                    || (Math.abs(deviationFromValue - minDeviationFromValue) < 0.00001
                     && closestToValue - tempValue < 0)) {
                 closestToValue = temperatureSeries[i];
+				minDeviationFromValue = deviationFromValue;
             }
         }
         return closestToValue;
@@ -111,7 +116,8 @@ public class TemperatureSeriesAnalysis {
 
     public double[] findTempsLessThen(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
-        double[] tempsLessThenValue = new double[this.countTempsLessThen(tempValue)];
+		int number = this.countTempsLessThen(tempValue);
+        double[] tempsLessThenValue = new double[number];
         int index = 0;
         for (int i = 0; i < filledSize; i++) {
             if (temperatureSeries[i] < tempValue) {
@@ -124,7 +130,8 @@ public class TemperatureSeriesAnalysis {
 
     public double[] findTempsGreaterThen(double tempValue) {
         this.throwExceptionIfSeriesIsEmpty();
-        double[] tempsGreaterThenValue = new double[this.countTempsGreaterThen(tempValue)];
+		int number = this.countTempsGreaterThen(tempValue);
+        double[] tempsGreaterThenValue = new double[number];
         int index = 0;
         for (int i = 0; i < filledSize; i++) {
             if (temperatureSeries[i] > tempValue) {
@@ -138,13 +145,14 @@ public class TemperatureSeriesAnalysis {
     public TempSummaryStatistics summaryStatistics() {
         this.throwExceptionIfSeriesIsEmpty();
         TempSummaryStatistics summaryStatistics =
-                new TempSummaryStatistics(this.average(), this.deviation(), this.min(), this.max());
+                new TempSummaryStatistics(this.average(), this.deviation(), 
+				this.min(), this.max());
         return summaryStatistics;
     }
 
     private void checkBoundsForTemps(double... temps) {
         for (double temp : temps) {
-            if (temp < minTemperature) {
+            if (temp < MIN_TEMPERATURE) {
                 throw new IllegalArgumentException();
             }
         }
